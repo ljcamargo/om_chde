@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Chile Decide 2013</title>
+        <meta charset="UTF-8">
+        <meta name="format-detection" content="telephone=no" />
+        <meta http-equiv="cache-control" content="max-age=0" />
+        <meta http-equiv="cache-control" content="no-cache" />
+        <meta http-equiv="expires" content="0" />
+        <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, target-densitydpi=medium-dpi, user-scalable=0" />
+        <script type="text/javascript" src="phonegap.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script src="lib/jquery-1.9.1.min.js"></script>
+        <script src="lib/jquery.mobile-1.3.2.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/engine.js"></script>
+        <script type="text/javascript" src="js/news.js"></script>
+        <script type="text/javascript" src="js/videos.js"></script>
+        <script type="text/javascript" src="js/allresults.js"></script>
+        <script type="text/javascript" src="js/rcandidates.js"></script>
+        <script type="text/javascript" src="js/candidates.js"></script>
+        <script type="text/javascript" src="js/territory.js"></script>
+        <script type="text/javascript">
+            //navigator.splashscreen.hide();
+            app.initialize();
+            $(window).load(function(){
+                fixW();
+                $( "#btn_resultados" ).click(function() {
+                    hideAllSubs();
+                    $( "#btn_resultados" ).addClass( "ui-btn-active" )
+                    $( "#section_all" ).show();
+
+                });
+                $( "#btn_candidatos" ).click(function() {
+                    hideAllSubs();
+                    $( "#btn_candidatos" ).addClass( "ui-btn-active" )
+                    $( "#section_candidates" ).show();
+                });
+                $( "#btn_regiones" ).click(function() {
+                    hideAllSubs();
+                    $( "#btn_regiones" ).addClass( "ui-btn-active" )
+                    $( "#section_regions" ).show();
+                });
+                $( "#btnPre" ).click(function() {
+                    jumpPre();
+                });
+                $( "#btnNext" ).click(function() {
+                    jumpNext();
+                });
+                requestNews();
+                requestOmVideos();
+                requestAllResults();
+                requestCandidatesResults();
+                requestCandidates();
+                requestTerritory();
+                fixW();
+            });
+
+            function fixW() {
+                var dw = $(window).width();
+                $('body').css('width', dw +'px');
+                $('body').css('overflow-x', 'hidden');
+            }
+
+            function hideAllSubs() {
+                $( "#section_all" ).hide();
+                $( "#section_regions" ).hide();
+                $( "#section_candidates" ).hide();
+                $( "#btn_resultados" ).removeClass( "ui-btn-active" )
+                $( "#btn_candidatos" ).removeClass( "ui-btn-active" )
+                $( "#btn_regiones" ).removeClass( "ui-btn-active" )
+            }
+            
+        </script>
+        <link href="css/index.css" rel="stylesheet">
+        <link href="src/css/jquery.mobile.structure-1.1.0.css" rel="stylesheet">
+        <link href="src/css/jquery.mobile.theme-1.1.0.css" rel="stylesheet">
+        <style>
+            TD { padding: 3px; }
+            A {  text-decoration: none !important; color: inherit; }
+        </style>
+    </head>
+    
+    <body style="width: 640px; height:960px;">
+        <div data-role="page" id="noticias" data-theme="c" data-title="Noticias">
+            <div data-role="header" data-theme="c" style="
+            background-color:#172341;
+            text-align:center; background-image: url('img/header.png'); background-repeat:no-repeat; background-position:left; ">
+                <img src="img/logo.png" style="width:29%; text-align:center;">
+            </div>
+            <div data-role="content" id ="holderNewsMsj"></div>
+            <div data-role="content" id ="holderNews">
+            </div>
+            <div data-role="footer" data-position="fixed" data-theme="c">
+                <div data-role="navbar">
+                    <ul>
+                        <li>
+                            <a data-role="button" class="ui-btn-active">Noticias</a>
+                        </li>
+                        <li>
+                            <a data-role="button" href="#videos">Videos</a>
+                        </li>
+                        <li>
+                            <a data-role="button" href="#resultados">Resultados</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="videos" data-theme="c" data-title="Videos">
+            <div data-role="header" data-theme="c" style="
+            background-color:#172341;
+            text-align:center; background-image: url('img/header.png'); background-repeat:no-repeat; background-position:left; ">
+                <img src="img/logo.png" style="width:29%; text-align:center;">
+            </div>
+            <div data-role="content" id="msj_videos"></div>
+            <div data-role="content" id="div_videos">
+                <h4>Cargando...</h4>                              
+            </div>
+            <div data-role="footer" data-position="fixed" data-theme="c">
+                <div data-role="navbar">
+                    <ul>
+                        <li>
+                            <a data-role="button" href="#noticias">Noticias</a>
+                        </li>
+                        <li>
+                            <a data-role="button" class="ui-btn-active">Videos</a>
+                        </li>
+                        <li>
+                            <a data-role="button" href="#resultados">Resultados</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div data-role="page" id="resultados" data-theme="c">
+            <div data-role="header" data-theme="c" style="
+            background-color:#172341;
+            text-align:center; background-image: url('img/header.png'); background-repeat:no-repeat; background-position:left; ">
+                <img src="img/logo.png" style="width:29%; text-align:center;">
+            </div>
+            <div data-role="content">
+                <div class="div-widget">
+                    <div data-role="controlgroup" data-type="horizontal" style="width:100%;">
+                        <a data-role="button" class="ui-btn-active"  data-mini="true" data-corners="false" style="width:33%;"  id="btn_candidatos">
+                            Candidatos
+                        </a>
+                        <a data-role="button"  data-mini="true" data-corners="false" style="width:33%;" id="btn_resultados">
+                            Resultados
+                        </a>
+                        <a data-role="button" data-mini="true" data-corners="false" style="width:33%;"  id="btn_regiones">
+                            Regiones
+                        </a>
+
+                    </div>
+                </div>
+                <div class="div-widget" id="section_all" style="display:none;">
+                    <div class="div-widget" id="tableAllRMsj"></div>
+                    <div class="div-widget" id="tableAllR">
+                     
+                    </div>
+                    <div class="div-widget" id="tableCandidatesMsj"></div>                   
+                     <table style="width:100%;" id="tableCandidates">
+                        <tr style="background-color:#EAEAEA;">
+                            <td colspan="2" width="0%">Candidato</td>
+                            <td width="20%">Votos</td>
+                            <td width="30%">%</td>
+                        </tr>                                                                      
+                     </table>
+                </div>
+
+
+                <div class="div-widget" id="section_regions" style="display:none;">
+                    <div class="div-widget" id="holderRegionsMsj"></div>
+                    <div class="div-widget" id="holderRegions">
+                        
+                    </div>
+                    <div data-role="controlgroup" data-type="horizontal" style="width:100%; text-align: center;">
+                        <a data-role="button" class="ui-btn-active" data-mini="true" data-corners="false" style="width:48%;" id="btnPre">Previo</a>
+                        <a data-role="button" data-mini="true" data-corners="false" style="width:48%;" id="btnNext">Siguiente</a>
+                    </div>
+
+                </div>
+                <div class="div-widget" id="section_candidates" >
+                    <div class="div-widget" id="gridCandidatesMsj" ></div>
+                    <div id="gridCandidates" class="ui-grid-a">
+                    </div>
+                </div>
+            </div>
+            <div data-role="footer" data-position="fixed" data-theme="c">
+                <div data-role="navbar">
+                    <ul>
+                        <li>
+                            <a data-role="button" href="#noticias">Noticias</a>
+                        </li>
+                        <li>
+                            <a data-role="button" href="#videos">Videos</a>
+                        </li>
+                        <li>
+                            <a data-role="button" class="ui-btn-active">Resultados</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- dialog init -->
+        <div data-role="page" id="dialog1">
+            <div data-role="header">
+                <h2>Michelle Bachelet</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/1c.jpg">
+                <img src="img/1p.png" style="width: 60px;">
+                <h3>Michelle Bachelet</h3>
+
+                <p>Partido: <br><br>
+                Nueva Mayoría (alianza de partidos)<br><br>
+                Consigna de campaña: Chile de todos<br><br>
+
+                Michelle Bachelet nació en Santiago el 29 de septiembre de 1951. Es hija del General de Brigada Aérea Alberto Bachelet y la antropóloga Ángela Jeria; es madre de Sebastián, Francisca y Sofía. Su infancia la vivió con sus padres en Quintero, Antofagasta, comuna de El Bosque, Santiago y Estados Unidos.<br><br>
+
+                En 1964 regresa con su familia a Chile. En 1970, ingresa a la Escuela de Medicina de la Universidad de Chile e inicia su militancia en la Juventud Socialista. Luego del golpe de Estado, junto con enfrentar la muerte de su padre en marzo de 1974, a causa de las torturas y duros interrogatorios a los que fue sometido por la dictadura de Augusto Pinochet, Michelle Bachelet es detenida junto a su madre en los centros de Villa Grimaldi y Cuatro Álamos.<br><br>
+
+                En 1975, ambas son expulsadas del país. Vivió el exilio en Australia y Alemania, donde continuó sus estudios de medicina.<br><br>
+
+                En 1979 regresa a Chile donde obtuvo el título de Médico Cirujano, y gracias a sus calificaciones y publicaciones obtiene la beca Colegio Médico de Chile para su especialización en Pediatría y Salud Pública en el Hospital Roberto del Río.<br><br>
+
+                En 1996 se especializó en temas de Defensa Nacional, realizando dos cursos sobre estrategia militar y defensa continental, para luego ser asesora del Ministerio de Defensa.<br><br>
+
+                En marzo de 2000 asume como Ministra de Salud en el gobierno de Ricardo Lagos. En 2002, asume como Ministra de Defensa, convirtiéndose en la primera mujer en ocupar ese cargo en la historia de Chile y Latinoamérica.<br><br>
+
+                En marzo de 2006, luego de obtener un amplio apoyo en las elecciones del año anterior, se convierte en la primera chilena en asumir la Presidencia de la República.<br><br>
+
+                Tras entregar la Presidencia a Sebastián Piñera, Bachelet asume en septiembre de 2010 como Directora de la agencia ONU Mujeres. En 2013 deja la organización para retornar a Chile, donde anunció su decisión de aspirar nuevamente a la jefatura del Estado.<br><br></p>
+
+
+                <h3>
+                ¿Qué propone?</h3><br>
+
+                <p>
+                En política exterior<br><br>
+
+                “Hacer política exterior desde América Latina con mucha fuerza, lo que no quiere decir que no vamos a hacer política exterior con Europa, el Asia pacífico y América del Norte (...) Chile impulsará en la región alianzas integradoras por eso estuvimos en CELAC empujando la integración latinoamericana y la integración entre los pueblos”.
+
+                "Con nuestros países tenemos que tener una agenda variada. Lo que tuvimos con Perú en el pasado fue una relación inteligente”.<br><br>
+
+                Nueva Constitución<br><br>
+
+                Bachelet ha dicho que Chile necesita una nueva Constitución que “identifique a todos los chilenos”, pues en la actualidad “hay una serie de cerrojos que permiten que en democracia unas minorías puedan vetar a las mayorías”.<br><br>
+
+                Nuevo Censo<br><br>
+
+                En palabras de Bachelet el último censo (2012): “Fue un tremendo fracaso que impacta a todo Chile: La gran tarea que tenemos por delante es restituir los datos más reales porque hoy no estamos seguros de cuántos somos, dónde estamos y cómo vivimos en detalle. Es evidente que hay que hacer un censo y es evidente que si la institucionalidad tiene debilidades y falencias hay que fortalecerlas y, por tanto, esa es una tarea que le tocará al nuevo Gobierno que habrá que llevarla adelante pensando en el país para tener los datos exactos para tomar buenas decisiones y recuperar ese patrimonio que nuestro país siempre ha tenido”.<br><br>
+
+                Mujer<br><br>
+
+                “Se trata del mayor programa de capacitación para mujeres que ha tenido Chile, y que beneficiará a cerca de 300 mil mujeres que hoy no están en mundo laboral (...) el derecho a capacitación en nuestro sistema de protección social”.<br><br>
+
+                Cultura<br><br>
+
+                Bachelet ha dicho que de ganar, su Gobierno conservará “los avances de la última década, desde la creación del Consejo Nacional de la Cultura y las Artes, pero que se ocupe también de que los chilenos y chilenas de todas las edades y condiciones puedan acceder, como público, a todo tipo de actividades artísticas y culturales, organizarse y participar en iniciativas autogestionadas y promover que nuestra gente desarrolle sus talentos y habilidades artísticas, especialmente los niños y jóvenes”.<br><br>
+
+                “Queremos que la cultura también se exprese como un derecho social al que tengan acceso todas las personas, sin importar dónde viven y si tienen plata para pagar una entrada o no”.<br><br>
+
+                 </p>       
+                    
+                 <h2> </h2>
+            </div>
+        </div>
+        <!-- dialog end -->
+
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog2">
+            <div data-role="header">
+                <h2>Franco Parisi</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/2c.jpg">
+                <img src="img/2p.png" style="width: 60px;">
+                <h3>Franco Parisi</h3>  
+                <p>
+                Partido: Independiente<br><br>
+                Consigna de campaña: El poder de la gente<br><br>
+
+                Nació en Santiago, en el seno de una familia de clase media.<br><br>
+
+                Formado íntegramente en la Educación Pública, primero en la Escuela Experimental Salvador Sanfuentes y luego en el Instituto Nacional. Sus años de secundaria concluyen en la Escuela Militar.
+                <br><br>
+                Ingresa a la Universidad de Chile para estudiar economía. Ya titulado, completa su formación en la Universidad de Georgia, Estados Unidos, donde obtiene el grado de Doctor en Administración y Finanzas. De vuelta en Chile, ingresa como Profesor en la Facultad de Economía y Negocios de la Universidad de Chile donde se desempeñó como Decano (s) y Vicedecano. Fue Decano del IEDE, Escuela de Negocios de la Universidad Europea de Madrid.<br><br>
+                </p>
+
+
+                <h3>
+                ¿Qué propone? </h3>
+
+                <p>
+                Ni de izquierda ni de derecha<br><br>
+
+                "Nosotros estamos llevando un discurso que va derecho a gente que es mucho más compleja, que entiende que los fenómenos no son de izquierda ni de derecha.<br><br>
+
+                Salud pública<br><br>
+
+                "Mejorar la atención de urgencia, promover el uso de recetas y licencias médicas digitales, crear hospitales clínicos de alta complejiddad en regiones".<br><br>
+
+                Ley de Medios y periodismo<br><br>
+
+                "Necesitamos una nueva Ley de Prensa, que otorgue más democracia y pluralismo de los medios de comunicación y menos monopolio de Medios Escritos, Radio y Televisión. Todos los grandes grupos económicos son dueños de los medios de comunicación eso no es bueno para la democratización de los ingresos, de las oportunidades y del poder".<br><br>
+
+                "¿Sabías que el gobierno gasta más de $33.000.000.000 anuales en publicidad de medios escritos? Recursos que se van a El Mercurio y la Tercera. Si me ayudas a llegar a la Moneda en marzo del 2014, ningún peso de ese monto se ira al Mercurio y/o a la Tercera, los destinaremos a medios regionales e independientes que son más de 100 a lo largo de nuestro Chile, dichos medios son manejado por periodistas comprometidos con la verdad que reciben cero publicidad del Gobierno y se las rasguñan solos, como esta candidatura".<br><br>
+
+                Contra el “bullyng”<br><br>
+
+                “El bullying es un flagelo que se ha instaurado entre nuestros niños y adolescentes, el cual, está arruinando la mejor etapa de sus vidas. A partir de Marzo del 2014 haremos el mayor de los esfuerzos para terminar con esta situación, generando las medidas necesarias para acabar con esta cruenta realidad”.<br><br>
+
+                “Estableceremos una unidad dependiente directamente del Presidente de la República con un Director(a) Nacional, quien velará por disminuir el flagelo que sufren nuestros niños y adolescentes por la crueldad de sus pares. Como criterio deberá crear las instancias de mediación, mediación legal y legislación (la cual se incorporará a la llamada responsabilidad penal juvenil) para cumplir con este principio diferenciando para niños menores a 12 años y adolescentes mayores de 12 años, involucrando a los padres y autoridades de las instituciones educacionales. La primera medida es que en el código legal exista la figura de bullying, donde en la actualidad no se encuentra tipificado como concepto y menos sancionado como delito”.<br><br>
+
+                Energías no convencionales<br><br>
+
+                “Que cada empresa eléctrica de los sistemas eléctricos (SIC y SIG), con una capacidad de 200 megawatts (estas son empresas generadoras medianas), deben acreditar ante CDED (dirección de peajes) que el 5% posteriormente el 10% de su producción de inyección al sistema interconectado responde a energía generada por ERNC, propias o contratadas. Esto significa que a las generadoras se les obliga a invertir en ERNC”.
+                <br><br>
+                Fuero laboral para los padres
+                <br><br>
+                “Otra inequidad que existe en Chile es que cuando la mamá o futura mamá queda embarazada tiene fuero maternal, muy bien, pero el papá o futuro papá puede ser despedido. Para ello, pasaremos la ley de fuero para el padre, que contará desde que se informa a la empresa que será padre y se incorpora en FONASA y/o ISAPRE del futuro papá y durará el fuero hasta que el hijo o hija tenga 6 meses de edad, independiente del tipo de familia que sean o con o sin libreta. Esto incluye a las fuerzas Armadas y de Orden y a los empleados públicos”. <br><br> </p>
+ 
+
+
+            </div>
+        </div>
+        <!-- dialog end -->
+
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog3">
+            <div data-role="header">
+                <h2>Marcel Claude</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/3c.jpg">
+                <img src="img/3p.png" style="width: 60px;">
+                <h3>Marcel Claude</h3>
+
+                <p>
+                Partido: Partido Humanista-Izquierda Unida<br><br>
+
+                Consignas de campaña: "No es sólo una candidatura; es un proyecto político de refundación", “Todos a La Moneda”.<br><br>
+
+                Es economista y Magister en Economía de la Universidad de Chile y Candidato a Doctor de la Universidad Católica de Lovaina, Bélgica. Actualmente se encuentra realizando el doctorado de Estudios Latinoamericanos en la Facultad de Filosofía y Humanidades de la Universidad de Chile.<br><br>
+
+                Fue funcionario del Banco Central de Chile durante la dictadura de Augusto Pinochet y tras su salida del poder, en 1990.<br><br>
+
+                En 1993 fue jefe del proyecto de cuentas ambientales del Banco Central de Chile, que dio origen a los informes sobre el bosque nativo chileno, la pesca y la minería, los cuales demostraron que el desarrollo chileno no era sustentable. Como resultado de la masiva y amplia polémica con la industria forestal, renuncia al Banco Central, tras el intento de ésta institución de manipular los resultados alcanzados a instancias y presiones de dicha industria.<br><br>
+
+                Desde 1997 fue director de la Fundación Terram que creó a fin de realizar estudios destinados a promover el desarrollo sustentable en Chile.<br><br>
+
+                Entre 2003 y 2006 fue director de la Fundación Océana para América Latina, donde dirigió estudios y acciones activistas en contra de la depredación de los mares chilenos.<br><br>
+
+                En el año 2006 ganó un litigio contra el Estado chileno en la Corte Interamericana de Derechos humanos por libertad de expresión y acceso a la información pública. Dicho fallo es el primero en su tipo.<br><br>
+
+                Ha sido consultor en temas económicos y ambientales, asesorando entre otras organizaciones al Sindicato Unificado de Trabajadores de la División Andina de Codelco, así como de su sindicato de supervisores; profesor de la Universidad de Chile en la Escuela de Gobierno y en la Facultad de Economía y Negocios; se ha desempeñado como académico de la Facultad de Humanidades de la Universidad de Santiago y la Universidad Diego Portales.<br><br>
+
+                Fue Director de Investigación y Desarrollo de la Universidad de Artes y Ciencias Sociales y Director de Estado, Economía y Gestión de la Universidad Academia de Humanismo Cristiano.<br><br>
+                </p>
+
+                <h2>
+                ¿Qué propone?</h2>
+
+
+                <p>
+                Asamblea Constituyente<br><br>
+
+                "Entendemos que el Chile de hoy está constituido sobre las bases de la institucionalidad autoritaria, dictatorial, que ha sido legitimada por la Concertación".<br><br>
+
+                “Han transcurrido 23 años y 4 gobiernos de la Concertación y uno de la derecha pinochetista y en Chile aún tenemos una Constitución anti-democrática e ilegítima. Estamos sometidos a un Estado centralizado y a un sistema político basado en la desconfianza hacia la voluntad popular, donde el ciudadano no tiene ningún protagonismo, donde se fomenta la desinformación política y el paternalismo, donde en definitiva se sigue eligiendo a unos pocos para representar los intereses de la minoría que detenta el poder económico, negando de manera perversa la soberanía del pueblo”.<br><br>
+
+                “Con el objetivo de instalar instituciones democráticas en el país, durante estos 23 años hemos propuesto la derogación mediante plebiscito de la Constitución de 1980 y la convocatoria a una Asamblea Constituyente que elabore una nueva Constitución, cuya propuesta sea también aprobada por plebiscito”.<br><br>
+
+                Por una sociedad libertaria<br><br>
+
+                “Crear una sociedad libertaria significa: Desconcentración, Descentralización, Democracia directa, Diversidad y Unión Latinoamericana en dirección a la Unión Mundial. La desconcentración económica, la descentralización estatal, la democracia directa, la valoración de la diversidad, regresa el poder social y político a quienes siempre debieron haberlo tenido: los Pueblos”.  <br><br>
+                    
+                </p>
+
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog4">
+            <div data-role="header">
+                <h2>Marco Enríquez</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/4c.jpg">
+                <img src="img/4p.png" style="width: 60px;">
+                <h3>Marco Enríquez-Ominami</h3>
+
+                <p>
+                Partido: Progresista <br>
+                Consigna de campaña: “Si tú quieres, Chile cambia”<br><br>
+
+                Es licenciado en Filosofía y literatura egresado de la Universidad de Chile. Nació en Santiago el 12 de junio de 1973. Es hijo del cofundador y secretario del Movimiento de Izquierda Revolucionaria (MIR), muerto por agentes pinochetistas.<br><br>
+
+                A los cinco meses de edad, fue expulsado de Chile por un decreto militar junto con toda su familia. Vivió fuera de su país por más de diez años.<br><br>
+
+                En 2009 decide ser candidato a la presidencia. Pero el Partido Socialista eligió a Eduardo Frei como candidato único.<br><br>
+
+                Asesinado por la dictadura<br><br>
+
+                Su padre fue Miguel Enríquez cofundador y Secretario General del Movimiento de Izquierda Revolucionaria (MIR) desde 1967 hasta su muerte a manos de militares de la dictadura en 1974.<br><br>
+
+                Tras el golpe de Estado de septiembre de 1973, Miguel Enríquez y otros miembros del MIR rechazan la idea del asilo político en embajadas extranjeras y condenan el exilio del país. Luego, comienzan a organizar actividades clandestinas contra la dictadura de Augusto Pinochet.<br><br>
+
+                Tras el golpe, Enríquez pasa a ser uno de los más buscados por las autoridades. Persecución que termina cuando es abatido el 5 de octubre de 1974 en un enfrentamiento con agentes de la Dirección de Inteligencia Nacional (DINA) en la comuna de San Miguel, Santiago, desde donde lideraba al MIR y donde, en la calle Santa Fe, vivía con su compañera Carmen Castillo quien tenía 6 meses de embarazo. Ella también fue herida y pese a que sobrevivió perdió al hijo de Miguel. Fue enterrado en el Cementerio General de Santiago.<br><br>
+                </p>
+
+                <h3>
+                ¿Qué propone? </h3>
+
+                Gratuidad de la educación<br><br>
+
+                "Nosotros vemos la gratuidad en la educación no sólo como un problema de acceso sino de definición de sociedad y valoración del individuo y del espacio público. Yo creo que la gratuidad es uno de los principales factores para terminar con la segregación y, por tanto, seguiremos defendiendo el camino para llegar a la educación pública, gratuita, laica y de calidad para todos los chilenos”.<br><br>
+
+                Nueva Constitución<br><br>
+
+                "El desafío es permitir el debate sobre las reglas que nos rigen, es decir, la Constitución. Debemos defender el derecho de un pueblo a fijar sus propias reglas".<br><br>
+
+
+                “En Chile hablamos de la libertad, del mercado y la empresa, pero poco del Estado, esfera pública y lo colectivo. La crisis en la confianza de los barrios, entre los chilenos, y eso tiene que ver con normas que hay que cambiar. La Concertación no quiso cambiar la Constitución, la derecha la cuida como tesoro, nosotros creemos que hay que cambiarla. Lo que ha pasado con el agua, con la educación, con los barrios, se están transformando en patrimonio de quien puede pagarla, y eso no es aceptable". <br><br>
+
+                Un Estado que vigile al mercado<br><br>
+
+                “Si el mercado no se vigila, yo no estoy contra el mercado, pero hay que vigilarlo y el principal vigilante del mercado es el Estado. Lo que pasó con las salmoneras es que el Estado no vigiló. Cualquier descuido va significar mucho desempleo y eso es lo que pasó. Se están levantando las salmoneras, pero de nuevo sin fiscalización del Estado. Nosotros creemos que el Estado es el brazo y el mercado es una herramienta y queremos un Estado vigilante”. <br><br>
+
+                Salud: Acceso a los medicamentos<br><br>
+
+                “La política que tenemos en materia de fármacos es inaceptable. Son caros y vendidos por farmacias que se coluden. Hemos visto hace poco un fallo inaceptable. La justicia condenó incluso a clases de ética a los ejecutivos, lo que ya es una caricatura. Lo que proponemos como solución es una Agencia Nacional de Medicamentos vinculante para todo Chile, además de la creación de un laboratorio de fármacos y vacunas. No sólo es un tema de más Estado, sino que de acceso a los medicamentos”.    <br><br>
+
+
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog5">
+            <div data-role="header">
+                <h2>Evelyn Matthei</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/5c.jpg">
+                <img src="img/5p.png" style="width: 60px;">
+                <h3>Evelyn Matthei</h3>     
+                <p>
+                Partido: Alianza por Chile, pacto integrado por los partidos Renovación Nacional (RN) y Unión Demócrata Independiente (UDI)<br><br>
+
+
+                Consigna de campaña: “Juntemos Chile”, “para ganar hay que correr. Ganemos juntos”.<br><br>
+
+
+                Evelyn Rose Matthei Fornet, nació en Santiago el 11 de noviembre de 1953. Es licenciada en economía, académica y política, miembro del partido de derecha Unión Demócrata Independiente (UDI).<br><br>
+
+
+                En 1988 ingresa como militante en el partido Renovación Nacional (RN, derecha), al que renunció en 1993, tras estallar el escándalo político conocido como “Piñeragate”, protagonizado por el actual presidente Sebastián Piñera.<br><br>
+
+
+                También conocido como el “Kiotazo”, fue una llamada telefónica entre Piñera y su amigo Pedro Pablo Díaz, en el que el primero le comentaba maniobras para sacar de la carrera política a Matthei, o por lo menos ponerla en una situación difícil para que bajara su credibilidad a los electores.<br><br>
+
+
+                Siguió por un año más como independiente, para unirse en 1999 al UDI, partido de derecha donde actualmente milita.<br><br>
+
+
+                En 2005 fue reelecta senadora y se desempeñó como presidenta de la Comisión de Hacienda del Senado, desde 2009, sin embargo no concluyó su último periodo senatorial, pues fue designada ministra del Trabajo y Previsión Social por el presidente Sebastián Piñera, el 16 de enero de 2011, cargo al que renunció el 20 de julio de 2013, para asumir una candidatura presidencial, en reemplazo del renunciado Pablo Longueira.<br><br>
+                </p>
+                  <h3>
+                Su padre, colaborador de la dictadura</h3>
+
+                <p>
+
+                Su padre, Fernando Matthei Aubel, es un general en retiro de la Fuerza Aérea y un activo colaborador de la dictadura de Augusto Pinochet, de quien fue su ministro de Salud (1976-1978), miembro de la Junta Militar (1978-1990) y comandante en jefe de la Fuerza Aérea de Chile (1978-1991). Colaboró con los británicos durante la guerra de Las Malvinas.<br><br>
+
+
+                Matthei Aubel ha sido acusado dos veces por su presunta participación en la muerte del General Alberto Bachelet (padre de Michelle Bachelet), solicitado por la Agrupación de Familiares de Ejecutados Políticos y por el abogado Eduardo Contreras.<br><br>
+
+
+                Bachelet murió en marzo de 1974 tras ser torturado durante su cautiverio en la Academia de Guerra Aérea dirigida por el, en ese entonces, coronel Matthei.<br><br>
+
+
+                Tras ser rechazado su enjuiciamiento en septiembre de 2012, una nueva solicitud de procesamiento fue efectuada en julio de 2013 por la misma agrupación y está pendiente de solución.<br><br>
+
+
+                La base de la acusación recae en que, como jefe de la Academia de Guerra Aérea, debía estar en conocimiento de las torturas a las que era sometido el padre de la expresidenta Michelle Bachelet.<br><br>
+
+
+                “Acusarme a mí de tener alguna participación en la muerte de mi amigo el general Bachelet, es tan grotesco como acusar a Bachelet de traición a la patria”, ha dicho el padre de Matthei.<br><br>
+                </p>
+
+                <h3>
+                ¿Qué propone?</h3>
+
+                Inmigración<br><br>
+
+
+                Evelyn Matthei ha propuesto el endurecimiento de las leyes migratorias chilenas. "Yo creo que nosotros vamos a tener que ser un poco más cautos. Probablemente debiéramos pedir que los permisos los pidan en sus países de origen y no que lleguen acá como turistas y después pidan los permisos acá".<br><br>
+
+
+                "Probablemente vamos a tener que ver cuáles son los antecedentes que tienen esas personas. (...) Y si tienen antecedentes delictuales no dejarlos entrar".<br><br>
+
+
+                "Y obviamente que si cometen algún delito acá en el país se les debe poner en la frontera de inmediato, y prohibición para siempre de volver a ingresar al país".<br><br>
+
+
+                Regiones<br><br>
+
+
+                "Cada vez que haya inversión en regiones, el 1 por ciento del valor de la inversión deberá quedar en beneficio de la comunidad o de la provincia donde esa empresa se instale (...) Las empresas se hacen ricas en regiones, pero todo el dinero y los ingresos quedan en Santiago y no en la región”<br><br>
+
+
+                "También después, cada año, cuando (las firmas) paguen impuestos por utilidades, el 10 por ciento de ese impuesto por utilidades también deberá invertirse en la región o la comunidad donde debe estar".<br><br>
+
+
+                Estado vs privados<br><br>
+
+
+                “Es hora que a lo público le hagamos las mismas exigencias que le hacemos a la empresa privada”<br><br>
+
+
+                Despenalización de la droga<br><br>
+
+
+                “La marihuana no debiera estar en lista uno. No sé cómo llegó a lista uno. Nosotros tenemos que definir efectivamente qué es porte y consumo propio, porque hay situaciones en que personas pasan mucho tiempo en la cárcel por portar bajas cantidades de marihuana. Tenemos que discutir también cuál es el daño de verdad que produce la marihuana”<br><br>
+
+
+                “Una mirada solamente desde el punto de la penalización, en general, no ha producido buenos resultados en ninguna parte del mundo”.<br><br>
+
+
+                Energía limpia<br><br>
+
+
+                “Tenemos una tremenda riqueza en el norte y no hemos sabido aprovecharla. Acá tenemos las mejores condiciones del mundo en materia de radiación solar. Por eso quiero anunciar que cuando lleguemos a La Moneda vamos a apoyar con todo la energía limpia y solar”.<br><br>
+
+
+
+                “No queremos más contaminación. Queremos que las personas que vivan en el norte no sufran con malos olores, queremos que puedan tener un menor costo en sus cuentas de energía eléctrica”.<br><br>
+
+
+
+                Justicia social<br><br>
+
+
+                “Quiero un país mejor para nuestros trabajadores, más justo con la clase media”.
+                <br><br>
+
+                Violencia contra la mujer<br><br>
+
+
+                “Queremos fiscalizar en forma muy estricta las medidas cautelares. Muchas veces las mujeres ni siquiera saben que se terminó la medida cautelar y otras veces aunque esta exista, igual se acercan, igual las matan. Por lo tanto, la fiscalización tiene que ser sumamente estricta"<br><br>
+
+
+
+                "Tenemos que buscar fórmulas para enfrentar la violencia, cómo prevenirla, cómo ayudar a las mujeres que la están sufriendo. Debemos lograr que los que están cometiendo la violencia cambien de actitud y si no cambian de actitud, que sean realmente castigados duramente".<br><br>
+
+
+                Seguridad pública<br><br>
+
+
+                “Hoy día andar con armas en la calle es solamente una falta. Lo vamos a convertir en un delito. La persona que ande con armas hechizas o de cualquier tipo en la calle, va a ser un delito y por lo tanto, penado con cárcel”.<br><br>
+
+
+                “Yo soy mujer, y cuando sea Presidenta, voy a defender a las familias como si fueran mi propia familia, con mano firme. No puede ser que la delincuencia y la droga se estén tomando las poblaciones. Y le vamos a poner coto a ello con toda la firmeza que esto requiere”.<br><br>
+
+                <p></p>
+
+
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog6">
+            <div data-role="header">
+                <h2>Alfredo Sfeir</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/6p.jpg">
+                <img src="img/6c.png" style="width: 60px;">
+                <h3>Alfredo Sfeir</h3>
+                <p>
+                Partido: Partido Ecologista. <br><br>
+
+                Consigna de campaña: Una razón para votar<br><br>
+
+                Alfredo Sfeir es considerado un "líder espiritual" por sus adherentes y su discurso apela a construir una sociedad autosustentable y que garantice respuestas a las demandas ciudadanas.<br><br>
+
+                Descendiente de emigrantes libaneses, es economista de la Universidad de Chile, con maestrías y doctorados de la Universidad de Rhode Island y de Wisconsin. También se graduó en la Universidad de Harvard como MBA Para Ejecutivos, además de los programas de finanzas y comunicaciones.<br><br>
+
+                Antes de fundar el IZTH, Alfredo Sfeir Younis ocupó varios cargos en el Banco Mundial, a partir de 1976, donde fue considerado el primer economista ambiental.<br><br>
+
+                Fue economista agrícola principal para el África del Oeste, líder en la formulación de políticas y programas ecológicos y medioambientales, Director de la oficina del Banco Mundial en Nueva York y Ginebra (Suiza), y vocero en materia de derechos humanos. Sirvió como Representante Especial del Banco Mundial ante Naciones Unidas y la Organización Mundial de Comercio entre 1996 y 2003.<br><br>
+
+                El 14 de abril de 2013, el Partido Ecologista Verde de Chile lo proclamó como su candidato a la Presidencia de Chile, para las elecciones de noviembre de 2013.<br><br>
+
+                </p>
+
+                <h3>
+                ¿Qué propone?</h3>
+
+                <p>
+
+                Sistema neoliberal depredador<br><br>
+
+                "Tenemos un sistema neoliberal muy depredador en relación a los recursos, un sistema neoliberal que concentra mucha riqueza en pocas manos, baja nuestra calidad de vida, problemas con la salud, problemas con la educación, problemas con los servicios".<br><br>
+
+                Economía sustentable<br><br>
+
+                "La economía sustentable no es una opción, es nuestro destino"<br><br>
+
+
+                Ciudadanía empoderada<br><br>
+
+                "Es muy importante cuando uno ofrece un nuevo modelo de vida, que la ciudadnía sea arte y parte en este modelo, y se integre realmnente participando, co-creando este nuevo sistema".<br><br>
+
+                Ciudades verdes<br><br>
+
+                “Ciudades verdes en nuestro país, extraordinariamente necesario. El estrés social, enfermedades debido a la congestión, a la contaminación del aire (...) la contaminación de las aguas”.<br><br>
+
+                Salud: menos enfermedades<br><br>
+
+                “El primer paso es recuperar la salud. No solamente es crontruir más hospitales, no solamente es tener más médicos, es tener menos enfermedades, tenemos que dialogar sobre la salud (...) Eliminación total de los productos transgénicos”.
+                <br><br>
+                “Recuperación de la salud: alimentación, nutrición, seguros (...) y la posibilidad de que la gente en las áreas rurales tenga buena salud”.<br><br>
+
+                Tener, tener, tener y no el ser<br><br>
+
+                “No hay un cambio solamente. El cambio del modelo económico es muy importante porque ha primado el criterio económico: el tener, tener, tener, no el ser. El consumismo, consumismo, consumismo, el mercado, el mercado, el mercado. Este sistema hay que cambiarlo, porque el mercado no tiene mecanismos automáticos para corregir ni lo social (la concentración de la riqueza), ni la destrucción ambiental, ni la cultura, ni la identidad nacional”<br><br>
+
+                Educación integral: mente, cuerpo y alma<br><br>
+
+                “Tenemos que cambiar también la educación. Cuando se habla de la calidad de la educación hay que volver atrás: primero un currículo que sea integral, no sólo la educación por saber, sino también la educación de la mente, el cuerpo y el alma”.<br><br>
+
+                </p>
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog7">
+            <div data-role="header">
+                <h2>Ricardo Zipper</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/7c.jpg">
+                <img src="img/7p.png" style="width: 60px;">
+                <h3>Ricardo Israel Zipper</h3>
+                <p>
+                Partido: Partido Regionalista Independiente <br><br>
+                Consigna de campaña: “Pacto por Chile, el nuevo Centro”<br><br>
+
+                Es un abogado chileno. Comentarista internacional en varios medios de comunicación, tanto en televisión, radio y medios escritos. En 2008 inició su carrera política al presentarse como candidato a alcalde apoyado por la coalición “Por un Chile Limpio”. El 20 de julio es proclamado como candidato presidencial por el PRI.<br><br>
+                </p>
+
+                <h3>¿Qué propone?</h3>
+
+                <p>
+                Descentralización<br><br>
+
+                “Esta candidatura busca fomentar la descentralización del país, priorizando la elección de consejeros regionales”.<br><br>
+
+                El centro<br><br>
+
+                Hasta ahora "hemos estado hablando de centroizquierda y centroderecha y de inventos que nadie entiende, como el centro social, pero lo que queremos es hablar sin complejos del centro".<br><br>
+
+                Hijo de las reformas<br><br>
+
+                "Yo me considero un hijo de las reformas que hizo el centro polítco al haber nacido en un hospital público y haber estudiado en un liceo de provincia".<br><br>
+                </p>
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog8">
+            <div data-role="header">
+                <h2>Roxana Miranda</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/8c.jpg">
+                <img src="img/8p.png" style="width: 60px;">
+                <h3>Roxana Miranda</h3>
+                <p>
+
+                Partidos: Movimiento Andha Chile a Luchar/ Partido Igualdad<br>
+                Consigna de campaña: “Que el pueblo mande”<br><br>
+
+
+                Inscribió su candidatura con 41 mil firmas y destaca que es la primera pobladora en competir por el sillón de La Moneda.<br><br>
+
+                En Chile "le entregamos la tremenda responsabilidad de gobernar a la élite, a intelectuales, que al final han hecho y deshecho con los derechos de la gente. Entonces, ya no confiamos en ellos", indica.<br><br>
+
+                "Ésta es una candidatura que es del pueblo pobre, de la gente común y corriente, del Chile real", advierte.<br><br>
+
+                </p>
+
+                <h3>
+                ¿Qué propone? </h3>
+
+                <br>
+
+                <p>
+                Una sociedad que derrote al capitalismo<br><br>
+
+                “El movimiento popular inicia la lucha para ser Gobierno y construir una nueva sociedad que termine con la explotación de los trabajadores, el abuso contra los consumidores, la destrucción de la naturaleza y la mercantilización de todos los ámbitos de nuestra vida, incluidos nuestros derechos más fundamentales”.<br><br>
+
+                Que el pueblo mande.<br><br>
+
+                “La superación del capitalismo demanda una nueva forma de organización política, una donde el pueblo mande. Por eso, como movimiento popular vamos a sustituir la actual república liberal-representativa del capitalismo por la nuestra propia. La República en la que el pueblo manda es una forma de organización política que hace descansar en las mayorías populares, y no en sus representantes minoritarios oligarquizados”.<br><br>
+
+                Intangibilidad de derechos.<br><br>
+
+                “En la sociedad que nos hemos propuesto construir, los derechos fundamentales a la educación, la vivienda, la jubilación digna, los servicios básicos, la alimentación de calidad y la salud son anteriores a cualquier otro derecho o privilegio. Por ello, es una obligación de la sociedad y sus instituciones garantizarlos y hacerlos efectivos”.<br><br>
+
+                El buen vivir<br><br>
+
+                “El paradigma de organización de la sociedad que queremos construir es ese que nuestros sabios pueblos originarios han denominado suma qamaña, sumak kawsay o küme felen, términos que se han traducido como “buen vivir” o “vivir bien”. El “buen vivir” es un paradigma de organización de la vida social, económica, cultural y política que se sustenta en la solidaridad, la comunidad y el colectivo, y en la unidad entre lo humano, lo biológico, lo psíquico, lo social y lo natural”.
+
+                </p>
+            </div>
+        </div>
+        <!-- dialog end -->
+
+        <!-- dialog init -->
+        <div data-role="page" id="dialog9">
+            <div data-role="header">
+                <h2>Tomás Jocelyn</h2>
+            </div>
+            <div data-role="content">
+                <img src="img/9c.jpg">
+                <img src="img/9p.png" style="width: 60px;">
+                <h3>Tomás Jocelyn Holt</h3>
+                <p>
+                Partido: Independiente <br><br>
+
+                Consigna de campaña: “Chile como tú lo quieras”<br><br>
+
+                Nació en Santiago el 16 de enero de 1963. Es un político chileno, exmilitante de la Democracia Cristiana hasta 2012 y diputado entre 1994 y 2002. Fue funcionario del Banco Interamericano de Desarrollo.<br><br>
+
+                </p>
+
+                <h3>¿Qué propone?</h3>
+
+                “En el fondo quieren una agenda más marcada por los temas del 2030 que del pasado, quizás determinados por este cansancio: hemos estado dominados por dos bloques que están muy en función de la transición de los últimos años".<br><br>
+
+                Buscando el voto del centro<br><br>
+
+                “Mi campaña está dirigida básicamente a buscar el voto de centro. Ese es el liberalismo valórico, y que es el perdedor de las dos alianzas. Ese sector fue el dominante y hoy es marginal. Un centro con carácter, una fuerza liberal joven, con optimismo”<br><br>
+
+                Otro esquema<br><br>
+
+                “Chile necesita otro esquema para armar una mayoría estable para resolver el entrampe en el que estamos”<br><br>
+
+                Sí a reformar la Constitución<br><br>
+
+                Tomás Jocelyn-Holt se ha mostrado partidario de reformar la constitución, aunque no a través de una asamblea constituyente, alternativa que calificó de ingenua. “La reforma constitucional se puede hacer en forma acotada y avanzar a cambiar el tercio”.<br><br>
+
+                Aborto<br><br>
+
+                “Yo me comprometo a que haya una norma que vuelva a establecer que en caso de peligrar la vida de la madre se pueda llegar a intervenir adecuadamente, para que la madre se pueda sentir con capacidad de tomar una definición centrada. Yo creo en el aborto terapéutico como una norma. Creo también en la necesidad de regular el aborto en casos de violación, incesto o inviabilidad fetal”.<br><br>
+
+                Marihuana<br><br>
+
+                "El consumo de la marihuana no debería ser penalizado, está siendo castigado como subterfugio. Yo traspasaría la marihuana de la lista uno a la lista 2. No es lógico que tengamos la marihuana en la lista uno, de drogas más graves, cuando tenemos la morfina en la lista 2 de drogas menos graves. Eso no tiene pies ni cabeza (...) Segundo creo que debemos de penalizar el autocultivo en Chile (...) Es ilógico seguir tratando a consumidores con la ley penal".<br><br>
+            </div>
+        </div>
+        <!-- dialog end -->
+
+    </body>
+
+</html>
